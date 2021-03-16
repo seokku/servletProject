@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" id="WebApp_ID" version="4.0">
+  <display-name>servletProject</display-name>
+  <welcome-file-list>
+    <welcome-file>main.do</welcome-file>
+  </welcome-file-list>
+  
+  <servlet>
+  		<servlet-name>main</servlet-name>
+  		<servlet-class>com.webjjang.main.controller.DispatcherServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>main</servlet-name>
+  	<url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+  
+  <!--   권한체크 필터 적용 -->
+	<filter>
+		<description>권한처리 필터</description>
+		<filter-name>auth</filter-name>
+		<filter-class>com.webjjang.util.filter.AuthorityFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>auth</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+
+	<!--   레이아웃 필터 - sitemesh -->
+ <filter>
+  <description>사이트에 레이아웃을 잡는 필터 처리</description>
+  <filter-name>sitemesh</filter-name>
+  <filter-class>com.opensymphony.sitemesh.webapp.SiteMeshFilter</filter-class>
+ </filter>
+ <filter-mapping>
+  <filter-name>sitemesh</filter-name>
+  <url-pattern>*.do</url-pattern>
+ </filter-mapping>
+  
+  
+</web-app>
