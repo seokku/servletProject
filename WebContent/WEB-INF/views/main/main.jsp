@@ -7,35 +7,95 @@
 <meta charset="UTF-8">
 <title>메인 페이지</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style type="text/css">
+	.noticeDataRow:hover, .boardDataRow:hover {
+		background: #eee;
+		cursor: pointer;
+}
+
+</style>
+<script type="text/javascript">
+$(function(){
+	// 클릭 이벤트 처리
+	$(".noticeDataRow, .boardDataRow").click(function(){
+// 		alert("click");
+		var no = $(this).find(".no").text();
+// 		alert(no);
+		// 클래스를 확인해서 어디로 갈지를 정한다.
+		if($(this).hasClass("noticeDataRow")) {
+// 			alert("공지사항 클릭");
+			location = "/notice/view.do?no=" + no;
+		} else if($(this).hasClass("boardDataRow")){
+// 			alert("일반 게시판 클릭");
+			location = "/board/view.do?no=" + no + "&inc=1";
+		}
+	});
+});
+
+</script>
 
 </head>
 <body>
 <div class="container">
 <h1>메인 페이지</h1>
-<p>로그인 : session에 정보가 있으면 로그인 되었다.-> 로그아웃이 보여야 한다.</p>
 
-<c:if test="${empty login }">
-	<!-- 로그인을 하지 않은 상태 -->
-	<div>로그인 정보가 없습니다.</div>
-	<a href="../member/loginForm.jsp" class="btn btn-default">로그인</a>
-</c:if>
+<!-- 공지사항  -->
+<div class="panel panel-default">
+  <div class="panel-heading">공지사항</div>
+  	<div class="panel-body">
+	  	<table class="table">
+			<tr>
+				<th>번호</th>
+				<th>제목</th>
+				<th>공지시작일</th>
+				<th>공지종료일</th>
+				<th>최종수정일</th>
+			</tr>
+			<c:forEach items="${noticeList }" var="vo">
+				<tr class="noticeDataRow">
+					<td class="no">${vo.no }</td>
+					<td>${vo.title }</td>
+					<td>${vo.startDate }</td>
+					<td>${vo.endDate }</td>
+					<td>${vo.updateDate }</td>
+				</tr>
+			</c:forEach>
+		</table>
+  	</div>
+</div>
 
-<c:if test="${!empty login }">
-	<!-- 로그인을 한 상태 -->
-	<div id="userInfo">
-		<span>${login.name }(${login.id })</span>님은 ${login.gradeName } 권한으로 로그인 되어 있습니다.
-	</div>
-	<a href="../member/logout.jsp" class="btn btn-default">로그아웃</a>
-	<a href="../member/view.jsp" class="btn btn-default">내정보 보기</a>
-	<c:if test="${login.gradeNo == 9 }">
-		<!-- 괸리자 메뉴 -->
-		<a href="../member/list.jsp" class="btn btn-default">회원 리스트</a>
-		</c:if>
-</c:if>
+<!-- 일반 게시판 -->
+<div class="panel panel-default">
+  <div class="panel-heading">일반 게시판</div>
+	  <div class="panel-body">
+	  	<table class="table">
+			<!-- 제목 -->
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>제목</th>
+					<th>작성자</th>
+					<th>작성일</th>
+					<th>조회수</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- 데이터가 있는 만큼 반복이 되어 지는 시작 부분 -->
+				<c:forEach items="${boardList }" var="vo">
+				<tr class="boardDataRow">
+					<td class="no">${vo.no }</td>
+					<td>${vo.title }</td>
+					<td>${vo.writer }</td>
+					<td>${vo.writeDate }</td>
+					<td>${vo.hit }</td>
+				</tr>
+				</c:forEach>
+				<!-- 데이터가 있는 만큼 반복이 되어 지는 끝 부분 -->
+			</tbody>
+		</table> 
+	  </div>
+</div>
+
 </div>
 </body>
 </html>

@@ -14,7 +14,7 @@ long no = Long.parseLong(strNo);
 
 // 2. DB 처리 - delete.jsp -> service -> dao
 
-Integer deleteVO =  (Integer) ExeService.execute(Beans.get(AuthorityFilter.url), no);
+ExeService.execute(Beans.get(AuthorityFilter.url), no);
 
 // 3. list로 자동 이동
 response.sendRedirect("list.jsp");

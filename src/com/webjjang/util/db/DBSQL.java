@@ -121,6 +121,10 @@ public class DBSQL {
 			" to_char(m.regDate, 'yyyy.mm.dd') regDate, m.status,  g.gradeNo, g.gradeName  " + 
 			" from member m, grade g  " + 
 			" where id = ? AND (m.gradeNo = g.gradeNo ) ";
+	// 회원가입
+	public static final String MEMBER_WRITE
+	= " insert into member(id, pw, name, gender, birth, tel, email ) "
+	+ " values(?, ?, ?, ?, ?, ?, ?) ";
 	
 	// 메시지  쿼리 --------------------------------------------------------------
 	// 1.메시지 리스트 - 번호, 보낸사람 아이디, 보낸날짜, 받은사람 아이디, 받은날짜

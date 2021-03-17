@@ -2,6 +2,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" id="WebApp_ID" version="4.0">
   <display-name>servletProject</display-name>
   <welcome-file-list>
+  <!-- 위치만 치면 뒤에 main.do가 자동으로 붙도록 설정 -->
     <welcome-file>main.do</welcome-file>
   </welcome-file-list>
   

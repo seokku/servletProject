@@ -32,9 +32,12 @@ public class DispatcherServlet extends HttpServlet {
 		// 이곳에서 처리해야할 모든 URL(*.do)을 받도록 설정 -> web.xml
 		System.out.println("DispatcherServlet.service()");		
 		
-		// /board/list.do - /board : substring(0, 6 -> 이렇게 사용가능(indexOf("/",1)) ---- 맨앞에 / 빼고 그뒤로부터 6번째부터 찾으라는 말, 맨뒤에 숫자가 거기서부터 찾자
-		// /qna/list.do /qna : substring(0, 4)
-		String module = AuthorityFilter.url.substring(0, AuthorityFilter.url.indexOf("/", 2));
+		// /board/list.do - /board : substring(0, 6) -> 이렇게 사용가능(indexOf("/", 1) ---- 맨앞에 / 빼고 그뒤로부터 6번째부터 찾으라는 말, 맨뒤에 숫자가 거기서부터 찾자
+		// /qna/list.do /qna : substring(0, 4) -> 이렇게 사용가능 index("/", 1)
+		int endIndex = AuthorityFilter.url.indexOf("/", 1);
+		String module = "/main";
+		// module이 존재하면 바꾼다. "/main.do" : module이 존재하지 않는다. module 변수에 있는 값은 바뀌지 않는다.
+		if (endIndex >= 0) module = AuthorityFilter.url.substring(0, endIndex);
 		
 		System.out.println("DispatcherServlet.service.module : " + module);
 		

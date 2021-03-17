@@ -31,11 +31,11 @@ public class AuthorityFilter implements Filter {
 	// 데이터를 넣는 방법 : static 초기화 블록
 	static {
 		// 공지사항 - 등록, 수정, 삭제 - 관리자 :9
-//		authMap.put("/notice/writeForm.do", 9);
-//		authMap.put("/notice/write.do", 9);
-//		authMap.put("/notice/updateForm.do", 9);
-//		authMap.put("/notice/update.do", 9);
-//		authMap.put("/notice/delete.do", 9);
+		authMap.put("/notice/writeForm.do", 9);
+		authMap.put("/notice/write.do", 9);
+		authMap.put("/notice/updateForm.do", 9);
+		authMap.put("/notice/update.do", 9);
+		authMap.put("/notice/delete.do", 9);
 		
 		// 이미지 게시판 - 등록, 수정, 삭제 - 회원 :1
 		authMap.put("/image/writeForm.do", 1);

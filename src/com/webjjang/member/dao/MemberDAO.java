@@ -196,4 +196,37 @@ public class MemberDAO {
 					System.out.println("MemberDAO.view().vo :" + vo);
 					return vo;
 				}
+	// 3. 회원가입
+	public int write(MemberVO vo) throws Exception {
+		int result = 0;
+		try {
+			// 1. 드라이버확인 + 2. 연결객체
+			con = DBInfo.getConnection();
+			// 3. sql + 4. 실행객체
+			pstmt = con.prepareStatement(DBSQL.MEMBER_WRITE);
+			pstmt.setString(1, vo.getId());
+			pstmt.setString(2, vo.getPw());
+			pstmt.setString(3, vo.getName());
+			pstmt.setString(4, vo.getGender());
+			pstmt.setString(5, vo.getBirth());
+			pstmt.setString(6, vo.getTel());
+			pstmt.setString(7, vo.getEmail());
+			// 5. 실행
+			result = pstmt.executeUpdate();
+			// 6. 표시
+			System.out.println("회원가입 성공");
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new Exception("회원가입 처리 중 DB 오류가 발생됨.");
+		} finally {
+			DBInfo.close(con, pstmt);
+		}
+		
+		
+		return result;
+	}
+	
+	
 }

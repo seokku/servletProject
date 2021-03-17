@@ -68,7 +68,7 @@ $(function(){
 		// alert("data 보기 클릭"); 
 		// $(this) : 자기 자신(이벤트가 일어난 곳 - 현재는 tr태그). 클래스가 no인 객체를 찾아라.태그안에 있는 글자 가져오기
 		var no = $(this).find(".no").text();
-		location = "view.jsp?no=" + no;
+		location = "view.do?no=" + no;
 	});
 });
 
@@ -101,12 +101,12 @@ $(function(){
 		<!-- 데이터가 있는 만큼 반복이 되어 지는 끝 부분 -->
 		<tr>
 			<td colspan="5">
-				<pageObject:pageNav listURI="list.jsp" pageObject="${pageObject }" />
+				<pageObject:pageNav listURI="list.do" pageObject="${pageObject }" />
 			</td>
 		</tr>
 		<tr>
 			<td colspan="5">
-				<a href="writeForm.jsp" class="btn btn-default">보내기</a>
+				<a href="writeForm.do" class="btn btn-default">보내기</a>
 			</td>
 		</tr>
 </table>

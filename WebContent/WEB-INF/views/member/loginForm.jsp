@@ -25,6 +25,7 @@
 		<input name="pw" id="pw" type="password" class="form-control" />
 	</div>
 	<button>로그인</button>
+	<a href="writeForm.do" class="btn btn-default">회원가입</a>
 </form>
 </div>
 </body>
