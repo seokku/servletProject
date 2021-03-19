@@ -62,6 +62,7 @@ public class AuthorityFilter implements Filter {
 		authMap.put("/message/write.do", 1);
 		authMap.put("/message/writeForm.do", 1);
 		authMap.put("/message/delete.do", 1);
+		authMap.put("/ajax/getMessageCnt.do", 1);
 	}
 	
 	// 요청한 url
@@ -101,6 +102,13 @@ public class AuthorityFilter implements Filter {
 		HttpSession session = req.getSession();
 		LoginVO vo = (LoginVO) session.getAttribute("login");
 		
+		// 새로운 메시지 갯수 처리를 하는데 로그인이 안되어 있으면 바로 로그인 페이지로 이동시킨다.
+		if(AuthorityFilter.url.equals("/ajax/getMessageCnt") && vo == null) {
+			((HttpServletResponse) response).sendRedirect("/member/LoginForm.do");
+			return;
+		}
+		
+		
 		// 권한이 없는 경우의 처리
 		if(!checkAuthority(vo)) {
 			// 오류 페이지로 이동시킵니다.
@@ -125,6 +133,7 @@ public class AuthorityFilter implements Filter {
 		// 여기서 부터를 로그인이 필요한 처리입니다. vo가 null이면 안된다.
 		if(vo == null) {
 			System.out.println("AuthorityFilter.checkAuthority() - 로그인이 필요합니다.");
+			if(AuthorityFilter.url.equals("/ajax/getMesaageCnt.do"))
 			return false;
 		}
 		System.out.println("AuthorityFilter.checkAuthority().pageGradeNo : " + pageGradeNo);

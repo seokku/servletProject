@@ -52,7 +52,7 @@ public class MemberController implements Controller {
 			login(request);
 		
 			// "member/view" 넘긴다 -> WEB-INF/views/ + member/view + .jsp를 이용해서 HTML을 만든다.
-			jspInfo = "redirect:/board/list.do";
+			jspInfo = "redirect:/main/main.do";
 			break;
 			
 		// 3-1. 로그인 폼 처리
@@ -61,7 +61,14 @@ public class MemberController implements Controller {
 			jspInfo = MODULE + "/loginForm";
 			break;
 			
-		// 4. 회원가입 처리
+		// 4. 로그아웃  처리
+		case "/" + MODULE + "/logout.do":
+			// "member/view" 넘긴다 -> WEB-INF/views/ + member/writeForm + .jsp를 이용해서 HTML을 만든다.
+			jspInfo = MODULE + "/logout";
+		break;
+			
+			
+		// 5. 회원가입 처리
 		case "/" + MODULE + "/write.do":
 			// service - dao --> request에 저장까지 해준다.
 			write(request);
@@ -70,18 +77,21 @@ public class MemberController implements Controller {
 		jspInfo = "redirect:/board/list.do";
 		break;
 		
-		// 4-1. 회원가입 폼 처리
+		// 5-1. 회원가입 폼 처리
 		case "/" + MODULE + "/writeForm.do":
 			// "member/view" 넘긴다 -> WEB-INF/views/ + member/writeForm + .jsp를 이용해서 HTML을 만든다.
 			jspInfo = MODULE + "/writeForm";
 		break;
 			
+		// 6. 아이디 중복 체크
+		case "/ajax/checkId.do":
+			// DB에서 입력한 아이디를 찾아온다.
+			// 찾아온 아이디를 request에 넣는다.
+			checkId(request);
 			
-		// 4. 로그아웃  처리
-		case "/" + MODULE + "/logout.do":
-			// "member/view" 넘긴다 -> WEB-INF/views/ + member/writeForm + .jsp를 이용해서 HTML을 만든다.
-			jspInfo = MODULE + "/logout";
-		break;
+			// div안에 들어갈 코드만 있는 jsp로 이동시킨다.
+			jspInfo = "member/checkId";
+			break; 
 		
 		
 		default:
@@ -102,7 +112,21 @@ public class MemberController implements Controller {
 					
 	}
 
-	// 2. 회원 로그인 처리
+	// 2. 회원 정보 보기 
+	private void view(HttpServletRequest request) throws Exception{
+			
+			// 자바 부분입니다.
+			LoginVO loginVO = (LoginVO) request.getSession().getAttribute("login");
+			System.out.println(loginVO);
+			
+			String id = loginVO.getId();
+			MemberVO vo = (MemberVO) ExeService.execute(Beans.get(AuthorityFilter.url), id);
+			
+			System.out.println(id);
+			request.setAttribute("vo", vo);
+		}
+		
+	// 3. 회원 로그인 처리
 	private void login(HttpServletRequest request) throws Exception{
 		
 		// 여기가 자바 입니다.
@@ -129,29 +153,15 @@ public class MemberController implements Controller {
 //		response.sendRedirect("../main/main.jsp");
 	}
 	
-	// 3. 회원 로그아웃 처리.
-	private void logout(HttpServletRequest request) throws Exception{
-		
-		// 여기가 자바 코드입니다. servlet-Controller-Service-DAO -> /member/write.do
+	// 4. 회원 로그아웃 처리
+	private void logout(HttpServletRequest request) throws Exception {
+		// 로그아웃 처리
 		request.getSession().invalidate();
-	}
+		System.out.println("로그아웃 처리가 되었습니다.");
+		}
 	
-	// 4. 회원 정보 보기 
-	private void view(HttpServletRequest request) throws Exception{
-		
-		// 자바 부분입니다.
-		LoginVO loginVO = (LoginVO) request.getSession().getAttribute("login");
-		System.out.println(loginVO);
-		
-		String id = loginVO.getId();
-		MemberVO vo = (MemberVO) ExeService.execute(Beans.get(AuthorityFilter.url), id);
-		
-		System.out.println(id);
-		request.setAttribute("vo", vo);
-	}
-	
-	// 3. 회원가입 처리.
-		private void write(HttpServletRequest request) throws Exception{
+	// 5. 회원가입 처리.
+	private void write(HttpServletRequest request) throws Exception{
 			
 			// 여기가 자바 코드입니다. servlet-Controller-Service-DAO -> /board/write.do
 			
@@ -177,34 +187,45 @@ public class MemberController implements Controller {
 			Integer result = (Integer) ExeService.execute(Beans.get(AuthorityFilter.url), vo);
 			System.out.println("BoardController.write().result : " + result); // result는 1이 나오거나 안나와서 예외가 발생되거나
 		}
-//
-//	// 4-2. 게시판 글수정 처리
-//	private Long update(HttpServletRequest request) throws Exception {
-//		
-//		// 1. 데이터 수집
-//		String strNo = request.getParameter("no");
-//		long no = Long.parseLong(strNo);
-//		String title = request.getParameter("title");
-//		String content = request.getParameter("content");
-//		String writer = request.getParameter("writer");
-//
-//		MemberVO vo = new MemberVO();
+
+	// 6. 아이디 중복 체크
+	private void checkId(HttpServletRequest request) throws Exception{
+		// 넘오은 아이디 받기
+		String id = request.getParameter("id");
+		// DB처리 -> id를 가져온다.
+		String result = (String) ExeService.execute(Beans.get(AuthorityFilter.url), id);
+		// 서버 객체에 저장한다.
+		request.setAttribute("id", result);
+	}
+			
+	
+	// . 게시판 글수정 처리
+	private Long update(HttpServletRequest request) throws Exception {
+		
+		// 1. 데이터 수집
+		String strNo = request.getParameter("no");
+		long no = Long.parseLong(strNo);
+		String title = request.getParameter("title");
+		String content = request.getParameter("content");
+		String writer = request.getParameter("writer");
+
+		MemberVO vo = new MemberVO();
 //		vo.setNo(no);
 //		vo.setTitle(title);
 //		vo.setContent(content);
 //		vo.setWriter(writer);
-//
-//		// 2. DB 처리 - update.jsp -> service -> dao
-//		String url = request.getServletPath();
-//		Integer result = (Integer) ExeService.execute(Beans.get(url), vo);
-//		
-//		if(result < 1) throw new Exception("게시판 글수정 - 수정할 데이터가 존재하지 않습니다.");
-//		
-//		return no;
-//
-//	}
 
-	// 5. 게시판 글삭제 처리
+		// 2. DB 처리 - update.jsp -> service -> dao
+		String url = request.getServletPath();
+		Integer result = (Integer) ExeService.execute(Beans.get(url), vo);
+		
+		if(result < 1) throw new Exception("게시판 글수정 - 수정할 데이터가 존재하지 않습니다.");
+		
+		return no;
+
+	}
+
+	// . 게시판 글삭제 처리
 	private void delete(HttpServletRequest request) throws Exception{
 		
 		// 1. 데이터 수집
@@ -216,5 +237,7 @@ public class MemberController implements Controller {
 		Integer result = (Integer) ExeService.execute(Beans.get(url), no);
 		if(result ==0) throw new Exception("게시판 글삭제 오류 - 존재하지 않는 글은 삭제할 수 없습니다.");
 	}
+
+	
 
 }

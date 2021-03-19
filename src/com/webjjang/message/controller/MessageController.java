@@ -2,9 +2,9 @@ package com.webjjang.message.controller;
 
 import java.util.List;
 
+import javax.el.ELException;
 import javax.servlet.http.HttpServletRequest;
 
-import com.oreilly.servlet.multipart.ExceededSizeException;
 import com.webjjang.message.vo.MessageVO;
 import com.webjjang.main.controller.Beans;
 import com.webjjang.main.controller.Controller;
@@ -66,8 +66,11 @@ public class MessageController implements Controller {
 			// service - dao --> request에 저장까지 해준다.
 			delete(request);
 		
-			// list.do로 자동으로 이동 
-			jspInfo = "redirect:list.do?page=1&perPageNum=" + pageObject.getPerPageNum();
+		// 5. 새로운 메시지 갯수 가져오기
+		case "/ajax/getMessageCnt.do":
+			// service - dao --> request에 저장까지 해준다.
+//			jspInfo = "123";
+			jspInfo = "" + getMessageCnt(request);
 			break;
 		
 		default:
@@ -84,8 +87,8 @@ public class MessageController implements Controller {
 //		PageObject pageObject = new PageObject();
 		
 		// 넘어오는 데이터 받기 
-		long curPage = 1; 
-		long perPageNum = 10; // 한페이지에 표시되는 갯수
+//		long curPage = 1; 
+//		long perPageNum = 10; // 한페이지에 표시되는 갯수
 		//page는 jsp에서 기본객체로 사용하고 있다. -> 페이지의 정보가 담겨져 있다.
 		String strCurPage = request.getParameter("page");
 		//한페이지에 표시할 데이터의 수를 받는다.
@@ -181,6 +184,17 @@ public class MessageController implements Controller {
 
 		// 3. list로 자동 이동
 //		response.sendRedirect("list.jsp");
+	}
+	
+	// 5. 새로운 메시지 갯수 가져오기
+	private Long getMessageCnt(HttpServletRequest request) throws Exception{
+		// session에 있는 id를 꺼낸다.
+		LoginVO vo =(LoginVO) request.getSession().getAttribute("login");
+		if(vo == null) throw new ELException("MessageController.getMessageCnt() - 로그인이 안되어 있다.");
+		String id = vo.getId();
+		return (Long) ExeService.execute(Beans.get(AuthorityFilter.url), id);
+
+
 	}
 
 }

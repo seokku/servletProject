@@ -230,5 +230,35 @@ public class MessageDAO {
 			return result;
 		}
 		
+		// 6. 새로운 메시지 갯수
+		public Long getMessageCnt(String id) throws Exception {
+			// TODO Auto-generated method stub
+			Long cnt = 0L;
+			
+			try {
+				// 1. 2.
+				con = DBInfo.getConnection();
+				// 3. 4.
+				pstmt = con.prepareStatement(DBSQL.MESSAGE_GET_MESSAGE_CNT);
+				pstmt.setString(1, id);
+				// 5.
+				rs = pstmt.executeQuery();
+				
+				// 6.
+				if(rs != null && rs.next()) {
+					cnt = rs.getLong(1);
+					
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+				throw new Exception("MesaageDAO - 새로운 메시지 갯수 DB 처리 중 오류");
+			} finally {
+				DBInfo.close(con, pstmt, rs);
+			}
+			System.out.println("MessageDAO.getMessageCnt().cnt : " + cnt);
+			return cnt;
+		}
+		
 		
 }

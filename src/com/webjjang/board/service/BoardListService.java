@@ -12,6 +12,7 @@ public class BoardListService implements Service{
 	
 	@Override
 	public void setDAO(Object dao) {
+		System.out.println("BoardListService.setDAO().dao : " + dao);
 		this.dao = (BoardDAO) dao;
 	}
 	// url 요청에 따른 처리

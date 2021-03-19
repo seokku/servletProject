@@ -1,6 +1,9 @@
 package com.webjjang.main.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+
 import javax.servlet.ServletException;
 //import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,6 +35,9 @@ public class DispatcherServlet extends HttpServlet {
 		// 이곳에서 처리해야할 모든 URL(*.do)을 받도록 설정 -> web.xml
 		System.out.println("DispatcherServlet.service()");		
 		
+		// 순수한 데이터를 전잘하기 위한 객체
+		PrintWriter out = response.getWriter();
+		
 		// /board/list.do - /board : substring(0, 6) -> 이렇게 사용가능(indexOf("/", 1) ---- 맨앞에 / 빼고 그뒤로부터 6번째부터 찾으라는 말, 맨뒤에 숫자가 거기서부터 찾자
 		// /qna/list.do /qna : substring(0, 4) -> 이렇게 사용가능 index("/", 1)
 		int endIndex = AuthorityFilter.url.indexOf("/", 1);
@@ -39,6 +45,23 @@ public class DispatcherServlet extends HttpServlet {
 		// module이 존재하면 바꾼다. "/main.do" : module이 존재하지 않는다. module 변수에 있는 값은 바뀌지 않는다.
 		if (endIndex >= 0) module = AuthorityFilter.url.substring(0, endIndex);
 		
+		// 모듈에 포함이 안되어 있는 URL의 처리 -> siteMesh에 적용이 안되도록 만들어야 하므로
+		if(AuthorityFilter.url.equals("/ajax/checkId.do"))
+			module ="/member"; // MemberController가 선택
+		else if(AuthorityFilter.url.equals("/ajax/getMessageCnt.do")) {
+			module ="/message"; // MemberController가 선택
+			// 임시로 데이터를 클라이언트에게 보내는 처리 - 시스템의 초를 전달한다.
+			// DB에서 데이터 가져오기 - 새로운 메시지의 갯수를 가져오는 프로그램.controller - service - dao
+			try {
+				String data = Beans.getController(module).execute(request);
+				System.out.println("DispatcherServlet.service.module : " + module + "::ajax:getMessageCnt");
+				out.write(data);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
 		System.out.println("DispatcherServlet.service.module : " + module);
 		
 //		// 요청한 url을 처리해서 출력
@@ -50,7 +73,7 @@ public class DispatcherServlet extends HttpServlet {
 			// "/board"로 시작을 하면 BoradController가 실행이 되게 한다.
 			//  "/board"로 시작을 하면 --> url.indexOf("/board") == 0
 			Controller controller = Beans.getController(module);
-			if(controller == null) throw new Exception("Error 404 - 요청하신 URL이 존재하지 않습니다.");
+			if(controller == null) throw new Exception("DispatcherServlet.controller가 null : Error 404 - 요청하신 URL이 존재하지 않습니다.");
 			
 			String jspInfo = controller.execute(request);
 			

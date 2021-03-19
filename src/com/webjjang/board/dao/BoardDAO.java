@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.webjjang.board.vo.BoardReplyVO;
 import com.webjjang.board.vo.BoardVO;
 import com.webjjang.util.db.DBInfo;
 import com.webjjang.util.db.DBSQL;
@@ -258,5 +259,121 @@ public class BoardDAO {
 		return result;
 	}
 	
+	// 6. 게시판 댓글 리스트
+	public List<BoardReplyVO> replyList(Long no, PageObject pageObject) throws Exception{
+		
+		// 넘어오는 데이터 확인
+		System.out.println("BoardDAO.list().no/pageObject : " + no + "/" + pageObject);
+		
+		List<BoardReplyVO> list = null;
+		
+		try {
+			//1. 드라이버 확인 + 2. 연결
+			con = DBInfo.getConnection();
+			System.out.println("BoardDAO.replyList().con : " + con);
+			//3. sql -> DBSQL + 4. 실행객체 + 데이터 셋팅
+			System.out.println("BoardDAO.replyList().DBSQL.BOARD_REPLY_LIST : " + DBSQL.BOARD_REPLY_LIST);
+			pstmt = con.prepareStatement(DBSQL.BOARD_REPLY_LIST);
+			System.out.println("BoardDAO.replyList().pstmt : " + pstmt);
+			
+			pstmt.setLong(1, no); // 게시판 글번호
+			// 강제적으로 1페이지 셋팅
+			pstmt.setLong(2, 1); // 시작 번호 
+			pstmt.setLong(3, 10); // 끝 번호
+//			pstmt.setLong(2, pageObject.getStartRow()); // 시작 번호
+//			pstmt.setLong(3, pageObject.getEndRow()); // 끝 번호
+			// 5. 실행
+			rs = pstmt.executeQuery();
+			System.out.println("BoardDAO.replyList().rs : " + rs);
+			// 6. 표시 -> 데이터담기
+			if(rs != null) {
+				while(rs.next()) {
+					if(list == null) list = new ArrayList<>();
+					BoardReplyVO vo = new BoardReplyVO();
+					vo.setRno(rs.getLong("rno"));
+					vo.setNo(rs.getLong("no"));
+					vo.setContent(rs.getString("content"));
+					vo.setWriter(rs.getString("writer"));
+					vo.setWriteDate(rs.getString("writeDate"));
+					list.add(vo);
+//					System.out.println("BoardDAO.replyList().while().vo : " + vo); 
+				}
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			// 개발자를 위해서 오류를 콘솔에 출력한다.
+			e.printStackTrace();
+			// 사용자를 위한 오류 처리
+			throw new Exception("게시판 댓글 리스트 실행 중 DB 처리 오류");
+		} finally {
+			// 7. 닫기
+			DBInfo.close(con, pstmt, rs);
+		}
+		System.out.println("BoardDAO.replyList().list : " + list);
+		return list;
+	}
 	
+	// 6-1. 글 번호에 맞는 전체 데이터 갯수 구하기
+	public long getReplyTotalRow(Long no) throws Exception{
+		System.out.println("BoardDAo.getReplyTotalRow().no" + no);
+		long result = 0;
+		
+		try {
+			// 1.2.
+			con = DBInfo.getConnection();
+			System.out.println("BoardDAO.getReplyTotalRow().con : " + con);
+			// 3.4.
+			// 쿼리 확인
+			System.out.println("BoardDAO.getReplyTotalRow().DBSQL.BOARD_GET_REPLY_TOTALROW : " + DBSQL.BOARD_GET_REPLY_TOTALROW);
+			pstmt = con.prepareStatement(DBSQL.BOARD_GET_REPLY_TOTALROW);
+			System.out.println("BoardDAO.getReplyTotalRow().pstmt : " + pstmt);
+			pstmt.setLong(1, no);
+			// 5.
+			// rs는 출력해 볼 수 있다. 그러나 rs.next() 출력하면 데이터를 한개 넘기게 된다.
+			rs = pstmt.executeQuery();
+			System.out.println("BoardDAO.getReplyTotalRow().rs : " + rs);
+			// 6.
+			if(rs != null && rs.next()) {
+				result = rs.getLong(1);
+				System.out.println("BoardDAO.getReplyTotalRow().result : " + result);
+			}
+		} catch(Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new Exception("BoardDAO - 게시판 댓글 데이터 전체 갯수를 가져오는 DB 처리 중 오류");
+		} finally {
+			DBInfo.close(con, pstmt, rs);
+		}
+		System.out.println("BoardDAO.getReplyTotalRow().result : " + result);
+		return result;
+	}
+	
+	// 7. 게시판 댓글 등록
+		public int replyWrite(BoardReplyVO vo) throws Exception {
+			int result = 0;
+			try {
+				// 1. 드라이버확인 + 2. 연결객체
+				con = DBInfo.getConnection();
+				// 3. sql + 4. 실행객체
+				pstmt = con.prepareStatement(DBSQL.BOARD_REPLY_WRITE);
+				pstmt.setLong(1, vo.getNo());
+				pstmt.setString(2, vo.getContent());
+				pstmt.setString(3, vo.getWriter());
+				// 5. 실행
+				result = pstmt.executeUpdate();
+				// 6. 표시
+				System.out.println("게시판 댓글 등록 성공");
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+				throw new Exception("BoardDAO - 게시판 댓글 등록 처리 중 DB 오류가 발생됨.");
+			} finally {
+				DBInfo.close(con, pstmt);
+			}
+			
+			return result;
+		}
+		
 }

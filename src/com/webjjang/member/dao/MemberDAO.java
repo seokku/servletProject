@@ -228,5 +228,41 @@ public class MemberDAO {
 		return result;
 	}
 	
+	// 아이디 중복 체크
+	public String checkId(String id) throws Exception {
+		// TODO Auto-generated method stub
+		String result = null;
+		
+		try {
+			// 1. 2. 
+			con = DBInfo.getConnection();
+			// 3. 4.
+			// 실행쿼리 확인
+			System.out.println("MemberDAO.write().DBSQL.MEMBER_CHECK_ID: "
+					+ DBSQL.MEMBER_CHECK_ID);
+			pstmt = con.prepareStatement(DBSQL.MEMBER_CHECK_ID);
+			// sql 쿼리에 포함되어 있는 ? 의미에 맞는 데이터를 순서대로 셋팅
+			pstmt.setString(1, id);
+			// 5. 실행
+			//  - insert, update, delete 쿼리 실행 - int pstmt.executeUpdate()
+			//  - select - ResultSet pstmt.executeQuery()
+			rs = pstmt.executeQuery();
+			
+			// 6. 표시
+			if(rs != null && rs.next())
+				result = rs.getString("id");
+				
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new Exception("MemberDAO Error - 아이디 중복 체크 DB 처리 중 오류");
+		} finally {
+			DBInfo.close(con, pstmt, rs);
+		}
+		
+		System.out.println("MemberDAO.write().result : " + result);
+		return result;
+	}
+	
 	
 }

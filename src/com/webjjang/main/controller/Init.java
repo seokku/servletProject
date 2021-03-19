@@ -9,6 +9,8 @@ import com.webjjang.board.controller.BoardController;
 import com.webjjang.board.dao.BoardDAO;
 import com.webjjang.board.service.BoardDeleteService;
 import com.webjjang.board.service.BoardListService;
+import com.webjjang.board.service.BoardReplyListService;
+import com.webjjang.board.service.BoardReplyWriteService;
 import com.webjjang.board.service.BoardUpdateService;
 import com.webjjang.board.service.BoardViewService;
 import com.webjjang.board.service.BoardWriteService;
@@ -19,6 +21,7 @@ import com.webjjang.image.service.ImageUpdateFileService;
 import com.webjjang.image.service.ImageViewService;
 import com.webjjang.image.service.ImageWriteService;
 import com.webjjang.member.dao.MemberDAO;
+import com.webjjang.member.service.MemberCheckIdService;
 import com.webjjang.member.service.MemberGradeModifyService;
 import com.webjjang.member.service.MemberListService;
 import com.webjjang.member.service.MemberLoginService;
@@ -28,6 +31,7 @@ import com.webjjang.memeber.controller.MemberController;
 import com.webjjang.message.controller.MessageController;
 import com.webjjang.message.dao.MessageDAO;
 import com.webjjang.message.service.MessageDeleteService;
+import com.webjjang.message.service.MessageGetMessageCntService;
 import com.webjjang.message.service.MessageListService;
 import com.webjjang.message.service.MessageViewService;
 import com.webjjang.message.service.MessageWriteService;
@@ -83,6 +87,9 @@ public class Init extends HttpServlet {
 		Beans.put("/board/write.do", new BoardWriteService());
 		Beans.put("/board/update.do", new BoardUpdateService());
 		Beans.put("/board/delete.do", new BoardDeleteService());
+		// 원래 없는 URL이지만 게시판 글보기 할때 함께 실행해서 데이터를 가져간다.
+		Beans.put("/board/replyList.do", new BoardReplyListService());
+		Beans.put("/board/replyWrite.do", new BoardReplyWriteService());
 		
 		// service에 dao 넣기 - 조립
 		Beans.get("/board/list.do").setDAO(Beans.getDAO("boardDAO"));
@@ -90,6 +97,8 @@ public class Init extends HttpServlet {
 		Beans.get("/board/write.do").setDAO(Beans.getDAO("boardDAO"));
 		Beans.get("/board/update.do").setDAO(Beans.getDAO("boardDAO"));
 		Beans.get("/board/delete.do").setDAO(Beans.getDAO("boardDAO"));
+		Beans.get("/board/replyList.do").setDAO(Beans.getDAO("boardDAO"));
+		Beans.get("/board/replyWrite.do").setDAO(Beans.getDAO("boardDAO"));
 		
 		
 		// 공지사항 객체를 생성 후 저장 ====================================
@@ -152,6 +161,7 @@ public class Init extends HttpServlet {
 		Beans.put("/message/view.do", new MessageViewService());
 		// Beans에서 key="/message/view.do"로 저장해 놓은것은 꺼낸다. --> MessageViewService 객체를 꺼낸다.
 		Beans.put("/message/delete.do", new MessageDeleteService());
+		Beans.put("/ajax/getMessageCnt.do", new MessageGetMessageCntService());
 		
 		// service에 dao 넣기 - 조립
 		Beans.get("/message/list.do").setDAO(Beans.getDAO("messageDAO"));
@@ -167,6 +177,7 @@ public class Init extends HttpServlet {
 		// Beans에서 key="message.DAO"로 저장해 놓은것은 꺼낸다. --> MessageDAO 객체를 꺼낸다.
 		// 주의 : key가 다르면 null이 나온다. -> NullPointException이 나온다. + 대소문자를 잘 구분해야한다.
 		Beans.get("/message/delete.do").setDAO(Beans.getDAO("messageDAO"));
+		Beans.get("/ajax/getMessageCnt.do").setDAO(Beans.getDAO("messageDAO"));
 		
 		
 		// 회원 관리 객체를 생성 후 저장 ====================================
@@ -178,6 +189,7 @@ public class Init extends HttpServlet {
 		Beans.put("/member/list.do", new MemberListService());
 		Beans.put("/member/write.do", new MemberWriteService());
 		Beans.put("/member/gradeModify.do", new MemberGradeModifyService());
+		Beans.put("/ajax/checkId.do", new MemberCheckIdService());
 		System.out.println("Init.init().Beans.get(\"/member/gradeModify.do\") : " 
 		+ Beans.get("/member/gradeModify.do"));
 		
@@ -189,6 +201,7 @@ public class Init extends HttpServlet {
 		Beans.get("/member/login.do").setDAO(Beans.getDAO("memberDAO"));
 		Beans.get("/member/list.do").setDAO(Beans.getDAO("memberDAO"));
 		Beans.get("/member/write.do").setDAO(Beans.getDAO("memberDAO"));
+		Beans.get("/ajax/checkId.do").setDAO(Beans.getDAO("memberDAO"));
 		System.out.println("Init.init().Beans.get(\"memberDAO\") : " 
 				+ Beans.getDAO("memberDAO"));
 		Beans.get("/member/gradeModify.do").setDAO(Beans.getDAO("memberDAO"));

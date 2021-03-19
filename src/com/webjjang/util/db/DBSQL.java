@@ -28,6 +28,24 @@ public class DBSQL {
 	public static final String BOARD_GET_TOTALROW
 	= " select count(*) from board ";
 	
+	// 게시판 댓글 리스트
+	public static final String BOARD_REPLY_LIST
+	= "select rnum, rno, no, content, writer,"
+			+ " to_char(writeDate, 'yyyy.mm.dd') writeDate from( "
+			+ " select rownum rnum, rno, no, content, writer, writeDate from ("
+				+ " select rno, no, content, writer, writeDate from board_reply "
+				+ " where no = ? "
+				+ " order by rno desc "
+			+ " ) "
+			+ ") where rnum between ? and ?  ";
+	public static final String BOARD_GET_REPLY_TOTALROW
+	= " select count(*) from board_reply "
+		+ " where no = ? ";
+	// 댓글 등록
+	public static final String BOARD_REPLY_WRITE
+	= " insert into board_reply(rno, no, content, writer) " 
+		+ " values(board_reply_seq.nextval, ?, ?, ?) ";
+	
 	// 이미지 게시판 쿼리 --------------------------------------------------------------
 	// 1.리스트 - 번호, 제목, 작성자이름(작성자ID), 작성일, 파일명
 	public static final String IMAGE_LIST 
@@ -125,6 +143,10 @@ public class DBSQL {
 	public static final String MEMBER_WRITE
 	= " insert into member(id, pw, name, gender, birth, tel, email ) "
 	+ " values(?, ?, ?, ?, ?, ?, ?) ";
+	// 아이디 중복 체크
+	public static final String MEMBER_CHECK_ID
+	= "select id from member where id = ?";
+	
 	
 	// 메시지  쿼리 --------------------------------------------------------------
 	// 1.메시지 리스트 - 번호, 보낸사람 아이디, 보낸날짜, 받은사람 아이디, 받은날짜
@@ -156,10 +178,13 @@ public class DBSQL {
 	= "update message set acceptDate = sysdate "
 	+ " where no = ? and accepter = ? and acceptDate is null ";
 	
-	
-	// 4. 삭제
+	// 4. 삭제- 수정을 만들지 않는다.
 	public static final String MESSAGE_DELETE 
 	= " delete from message where no = ? ";
+
+	// 5. 새로운 메시지 갯수 가져오기
+	public static final String MESSAGE_GET_MESSAGE_CNT 
+	= " select count(*) from message where accepter = ? and acceptDate is null ";
 	
 	
 	public static final String MESSAGE_GET_TOTALROW
